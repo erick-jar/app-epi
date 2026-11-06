@@ -18,4 +18,6 @@ class FuncionarioService {
       throw Exception('Erro ao carregar funcionários');
     }
   }
+
+
 }

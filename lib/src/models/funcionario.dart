@@ -19,4 +19,9 @@ class Funcionario {
       setor: json['setor'],
     );
   }
+
+
+
+
+  
 }

@@ -1,13 +1,29 @@
+import 'package:app_epi/src/models/usuario.dart';
 import 'package:flutter/material.dart';
 
 import 'epi_screen.dart';
 import 'funcionario_screen.dart';
+import 'login_screen.dart';
 
 class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
+  final Usuario usuario;
+
+  const MainScreen({
+    super.key,
+    required this.usuario,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Lógica do desafio com os textos exatos da imagem
+    String mensagemPermissao = '';
+    
+    if (usuario.perfil.toUpperCase() == 'ADMIN') {
+      mensagemPermissao = 'Você possui permissões para aprovar empréstimos e registrar devoluções';
+    } else {
+      mensagemPermissao = 'Você pode consultar EPIs e solicitar empréstimos.';
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Empréstimos de EPIs'),
@@ -17,11 +33,15 @@ class MainScreen extends StatelessWidget {
       drawer: Drawer(
         child: ListView(
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text(
-                'Menu Principal',
-                style: TextStyle(color: Colors.white, fontSize: 22),
+            UserAccountsDrawerHeader(
+              accountName: Text(usuario.nome),
+              accountEmail: Text(usuario.perfil),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Text(
+                  usuario.nome.isNotEmpty ? usuario.nome[0].toUpperCase() : 'U',
+                  style: const TextStyle(fontSize: 40.0, color: Colors.blue),
+                ),
               ),
             ),
             ListTile(
@@ -35,6 +55,7 @@ class MainScreen extends StatelessWidget {
               leading: const Icon(Icons.health_and_safety),
               title: const Text('EPIs'),
               onTap: () {
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const EpiScreen()),
@@ -52,13 +73,39 @@ class MainScreen extends StatelessWidget {
                 );
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text('Sair'),
+              onTap: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (route) => false,
+                );
+              },
+            ),
           ],
         ),
       ),
-      body: const Center(
-        child: Text(
-          'Selecione uma opção no menu lateral',
-          style: TextStyle(fontSize: 18),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Bem-vindo ${usuario.nome}',
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                mensagemPermissao,
+                style: const TextStyle(fontSize: 16, color: Colors.black87),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
