@@ -1,6 +1,7 @@
 import 'package:app_epi/src/models/usuario.dart';
 import 'package:flutter/material.dart';
 
+import 'emprestimos_screen.dart';
 import 'epi_screen.dart';
 import 'funcionario_screen.dart';
 import 'login_screen.dart';
@@ -58,10 +59,26 @@ class MainScreen extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const EpiScreen()),
+                  // Etapa 10: Removido o 'const' e adicionado o parâmetro usuario
+                  MaterialPageRoute(builder: (_) => EpiScreen(usuario: usuario)),
                 );
               },
             ),
+            // NOVO ITEM ADICIONADO: Meus Empréstimos
+            ListTile(
+              leading: const Icon(Icons.assignment),
+              title: const Text('Meus Empréstimos'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => MeusEmprestimosScreen(usuario: usuario),
+                  ),
+                );
+              },
+            ),
+
             ListTile(
               leading: const Icon(Icons.people),
               title: const Text('Funcionários'),

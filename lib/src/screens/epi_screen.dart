@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
-
 import '../models/epi.dart';
+import '../models/usuario.dart';
 import '../services/api_config.dart';
 import '../services/epi_service.dart';
+import 'epi_detalhe_screen.dart';
 
 class EpiScreen extends StatelessWidget {
-  const EpiScreen({super.key});
+  final Usuario usuario;
+
+  const EpiScreen({
+    super.key,
+    required this.usuario, 
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +46,24 @@ class EpiScreen extends StatelessWidget {
             itemCount: epis.length,
             itemBuilder: (context, index) {
               final epi = epis[index];
+              // CORREÇÃO: Alterado de epi.imageUrl para epi.imagemUrl
               final urlImagem = '${ApiConfig.baseUrl}${epi.imagemUrl}';
 
               return Card(
                 elevation: 3,
                 margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 child: ListTile(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EpiDetalheScreen(
+                          epi: epi,
+                          usuario: usuario,
+                        ),
+                      ),
+                    );
+                  },
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
@@ -74,12 +92,15 @@ class EpiScreen extends StatelessWidget {
                       Text(
                         '${epi.categoria}\nCA: ${epi.ca} | Disp: ${epi.quantidadeDisponivel}',
                       ),
-                      if (epi.isCaVencido)
-                        const Text(
-                          '⚠️ CA VENCIDO',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.bold,
+                      if (epi.caVencido)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 4),
+                          child: Text(
+                            '⚠️ CA VENCIDO',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                     ],
