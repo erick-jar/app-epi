@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/funcionario.dart';
 import '../services/funcionario_service.dart';
+import 'funcionario_detalhes_screen.dart'; // IMPORT ADICIONADO
 
 class FuncionarioScreen extends StatelessWidget {
   const FuncionarioScreen({super.key});
@@ -67,6 +68,14 @@ class FuncionarioScreen extends StatelessWidget {
                   subtitle: Text(
                     'Matrícula: ${func.matricula}\nSetor: ${func.setor}',
                   ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => FuncionarioDetalhesScreen(funcionario: func),
+                      ),
+                    );
+                  },
                 ),
               );
             },
@@ -75,7 +84,4 @@ class FuncionarioScreen extends StatelessWidget {
       ),
     );
   }
-
-
-  
 }

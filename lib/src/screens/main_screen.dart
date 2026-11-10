@@ -1,6 +1,8 @@
 import 'package:app_epi/src/models/usuario.dart';
 import 'package:flutter/material.dart';
 
+import 'cadastrar_treinamento_screen.dart';
+import 'treinamento_screen.dart'; 
 import 'emprestimos_screen.dart';
 import 'epi_screen.dart';
 import 'funcionario_screen.dart';
@@ -16,7 +18,6 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Lógica do desafio com os textos exatos da imagem
     String mensagemPermissao = '';
     
     if (usuario.perfil.toUpperCase() == 'ADMIN') {
@@ -59,12 +60,10 @@ class MainScreen extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  // Etapa 10: Removido o 'const' e adicionado o parâmetro usuario
                   MaterialPageRoute(builder: (_) => EpiScreen(usuario: usuario)),
                 );
               },
             ),
-            // NOVO ITEM ADICIONADO: Meus Empréstimos
             ListTile(
               leading: const Icon(Icons.assignment),
               title: const Text('Meus Empréstimos'),
@@ -78,7 +77,34 @@ class MainScreen extends StatelessWidget {
                 );
               },
             ),
-
+            // Condicional do Exercício: Menu visível exclusivamente para perfil ADMIN
+            if (usuario.perfil.toUpperCase() == 'ADMIN')
+              ListTile(
+                leading: const Icon(Icons.add_task),
+                title: const Text('Cadastrar Treinamento'),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CadastrarTreinamentoScreen(usuario: usuario),
+                    ),
+                  );
+                },
+              ),
+            ListTile(
+              leading: const Icon(Icons.school),
+              title: const Text('Treinamentos'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => TreinamentosScreen(usuario: usuario),
+                  ),
+                );
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.people),
               title: const Text('Funcionários'),
