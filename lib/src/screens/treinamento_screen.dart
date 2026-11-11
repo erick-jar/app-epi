@@ -63,6 +63,31 @@ class _TreinamentosScreenState extends State<TreinamentosScreen> {
   }
 
   Future<void> marcarConcluido(Treinamento t) async {
+    // Diálogo de confirmação exigido pelo exercício
+    final bool? confirma = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar Conclusão'),
+          content: const Text(
+            'Confirma que você leu o material e concluiu o treinamento?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Confirmar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirma != true) return;
+
     setState(() {
       processandoId = t.id;
     });
