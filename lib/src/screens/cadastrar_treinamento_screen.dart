@@ -1,4 +1,6 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import '../models/usuario.dart';
 import '../services/treinamento_service.dart';
 
@@ -8,30 +10,58 @@ class CadastrarTreinamentoScreen extends StatefulWidget {
   const CadastrarTreinamentoScreen({super.key, required this.usuario});
 
   @override
-  State<CadastrarTreinamentoScreen> createState() => _CadastrarTreinamentoScreenState();
+  State<CadastrarTreinamentoScreen> createState() =>
+      _CadastrarTreinamentoScreenState();
 }
 
-class _CadastrarTreinamentoScreenState extends State<CadastrarTreinamentoScreen> {
+class _CadastrarTreinamentoScreenState
+    extends State<CadastrarTreinamentoScreen> {
   final _formKey = GlobalKey<FormState>();
   final _tituloController = TextEditingController();
   final _descricaoController = TextEditingController();
   final _arquivoController = TextEditingController();
   final _validadeController = TextEditingController();
+
+  Uint8List? _arquivoBytes;
+  String? _nomeArquivo;
   bool _salvando = false;
 
-  Future<void> _salvar() async {
-    if (!_formKey.currentState!.validate()) return;
+     Future<void> _selecionarArquivo() async {
+    final PlatformFile? file = await FilePicker.pickFile(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx', 'mp4'],
+    );
 
+    if (file != null) {
+      // Lê os bytes do arquivo de forma assíncrona (padrão do file_picker v13+)
+      final Uint8List bytes = await file.readAsBytes();
+
+      setState(() {
+        _arquivoBytes = bytes;
+        _nomeArquivo = file.name;
+        _arquivoController.text = _nomeArquivo!;
+      });
+    }
+  }
+
+
+
+  Future<void> _salvar() async {
+    if (!_formKey.currentState!.validate())return;
     setState(() => _salvando = true);
 
     try {
       final validadeText = _validadeController.text;
-      final int? validadeMeses = validadeText.isNotEmpty ? int.tryParse(validadeText) : null;
+      final int? validadeMeses =  
+          validadeText.isNotEmpty ? int.tryParse(validadeText) : null;
 
       await TreinamentoService().cadastrar(
         titulo: _tituloController.text,
-        descricao: _descricaoController.text.isEmpty ? null : _descricaoController.text,
-        arquivoUrl: _arquivoController.text.isEmpty ? null : _arquivoController.text,
+        descricao: _descricaoController.text.isEmpty
+            ? null
+            : _descricaoController.text,
+        arquivoBytes: _arquivoBytes,
+        nomeArquivo: _nomeArquivo,
         validadeMeses: validadeMeses,
         adminId: widget.usuario.id,
       );
@@ -39,7 +69,7 @@ class _CadastrarTreinamentoScreenState extends State<CadastrarTreinamentoScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Treinamento cadastrado com sucesso!'), 
+          content: Text('Treinamento cadastrado com sucesso!'),
           backgroundColor: Colors.green,
         ),
       );
@@ -48,7 +78,7 @@ class _CadastrarTreinamentoScreenState extends State<CadastrarTreinamentoScreen>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(e.toString().replaceFirst('Exception: ', '')), 
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
           backgroundColor: Colors.red,
         ),
       );
@@ -86,7 +116,9 @@ class _CadastrarTreinamentoScreenState extends State<CadastrarTreinamentoScreen>
                   labelText: 'Título (Obrigatório) *',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) => value == null || value.trim().isEmpty ? 'Informe o título do treinamento' : null,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? 'Informe o título do treinamento'
+                    : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -100,9 +132,31 @@ class _CadastrarTreinamentoScreenState extends State<CadastrarTreinamentoScreen>
               const SizedBox(height: 16),
               TextFormField(
                 controller: _arquivoController,
-                decoration: const InputDecoration(
-                  labelText: 'Caminho do Arquivo (Ex: /arquivos/nr35.pdf)',
-                  border: OutlineInputBorder(),
+                readOnly: true,
+                onTap: _selecionarArquivo,
+                decoration: InputDecoration(
+                  labelText: 'Anexar Arquivo (PDF, Vídeo, etc.)',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_arquivoBytes != null)
+                        IconButton(
+                          icon: const Icon(Icons.clear, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              _arquivoBytes = null;
+                              _nomeArquivo = null;
+                              _arquivoController.clear();
+                            });
+                          },
+                        ),
+                      IconButton(
+                        icon: const Icon(Icons.upload_file),
+                        onPressed: _selecionarArquivo,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -120,11 +174,14 @@ class _CadastrarTreinamentoScreenState extends State<CadastrarTreinamentoScreen>
                   : ElevatedButton(
                       onPressed: _salvar,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue, 
+                        backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: const Text('Salvar Treinamento', style: TextStyle(fontSize: 16)),
+                      child: const Text(
+                        'Salvar Treinamento',
+                        style: TextStyle(fontSize: 16),
+                      ),
                     ),
             ],
           ),
