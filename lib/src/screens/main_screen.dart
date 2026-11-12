@@ -2,11 +2,12 @@ import 'package:app_epi/src/models/usuario.dart';
 import 'package:flutter/material.dart';
 
 import 'cadastrar_treinamento_screen.dart';
-import 'treinamento_screen.dart'; 
+import 'dashboard_view.dart';
 import 'emprestimos_screen.dart';
 import 'epi_screen.dart';
 import 'funcionario_screen.dart';
 import 'login_screen.dart';
+import 'treinamento_screen.dart';
 
 class MainScreen extends StatelessWidget {
   final Usuario usuario;
@@ -18,14 +19,6 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String mensagemPermissao = '';
-    
-    if (usuario.perfil.toUpperCase() == 'ADMIN') {
-      mensagemPermissao = 'Você possui permissões para aprovar empréstimos e registrar devoluções';
-    } else {
-      mensagemPermissao = 'Você pode consultar EPIs e solicitar empréstimos.';
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Empréstimos de EPIs'),
@@ -60,7 +53,9 @@ class MainScreen extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => EpiScreen(usuario: usuario)),
+                  MaterialPageRoute(
+                    builder: (context) => EpiScreen(usuario: usuario),
+                  ),
                 );
               },
             ),
@@ -72,12 +67,12 @@ class MainScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => MeusEmprestimosScreen(usuario: usuario),
+                    builder: (context) =>
+                        MeusEmprestimosScreen(usuario: usuario),
                   ),
                 );
               },
             ),
-            // Condicional do Exercício: Menu visível exclusivamente para perfil ADMIN
             if (usuario.perfil.toUpperCase() == 'ADMIN')
               ListTile(
                 leading: const Icon(Icons.add_task),
@@ -87,7 +82,8 @@ class MainScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => CadastrarTreinamentoScreen(usuario: usuario),
+                      builder: (context) =>
+                          CadastrarTreinamentoScreen(usuario: usuario),
                     ),
                   );
                 },
@@ -100,7 +96,7 @@ class MainScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => TreinamentosScreen(usuario: usuario),
+                    builder: (context) => TreinamentosScreen(usuario: usuario),
                   ),
                 );
               },
@@ -112,7 +108,9 @@ class MainScreen extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const FuncionarioScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const FuncionarioScreen(),
+                  ),
                 );
               },
             ),
@@ -122,7 +120,7 @@ class MainScreen extends StatelessWidget {
               onTap: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                   (route) => false,
                 );
               },
@@ -130,27 +128,7 @@ class MainScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Bem-vindo ${usuario.nome}',
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                mensagemPermissao,
-                style: const TextStyle(fontSize: 16, color: Colors.black87),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
+      body: DashboardView(usuario: usuario),
     );
   }
 }
