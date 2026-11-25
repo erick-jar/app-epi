@@ -15,7 +15,7 @@ class AuthService {
       body: jsonEncode({
         'matricula': matricula,
         'senha': senha,
-      }),
+      }).timeout(const Duration(seconds:90));
     );
     
     if (response.statusCode == 200) {

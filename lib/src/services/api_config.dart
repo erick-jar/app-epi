@@ -1,3 +1,7 @@
 class ApiConfig {
-  static const String baseUrl = 'http://localhost:8080';
+// Pode ser trocada na hora do build com --dart-define=API_URL=...
+static const String baseUrl = String.fromEnvironment(
+'API_URL',
+defaultValue: 'https://https://api-epi-erick.onrender.com',
+);
 }
