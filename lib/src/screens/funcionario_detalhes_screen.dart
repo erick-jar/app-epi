@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../services/treinamento_service.dart';
 import '../models/funcionario.dart';
 import '../models/treinamento_realizado.dart';
-import '../services/treinamento_service.dart';
 
 class FuncionarioDetalhesScreen extends StatefulWidget {
   final Funcionario funcionario;
